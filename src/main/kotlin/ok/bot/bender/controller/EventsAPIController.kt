@@ -16,10 +16,18 @@ class EventsAPIController {
 
     @PostMapping("/event")
     fun postEvent(@RequestBody challengeVerification: ChallengeVerification) : String? {
-        if (challengeVerification.token != verificationToken) {
-            return ""
+        if (challengeVerification.type == "url_verification") {
+            return when(challengeVerification.token) {
+                verificationToken -> challengeVerification.challenge
+                else -> ""
+            }
         }
-        return challengeVerification.challenge
+
+        println(challengeVerification.token)
+        println(challengeVerification.challenge)
+        println(challengeVerification.type)
+        println(challengeVerification.toString())
+        return "HEY"
     }
 
 }
