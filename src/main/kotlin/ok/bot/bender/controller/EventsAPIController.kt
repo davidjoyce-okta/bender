@@ -15,11 +15,11 @@ class EventsAPIController {
     var verificationToken: String? = null
 
     @PostMapping("/event")
-    fun postEvent(@RequestBody challengeVerification: ChallengeVerification) : String {
+    fun postEvent(@RequestBody challengeVerification: ChallengeVerification) : String? {
         if (challengeVerification.token != verificationToken) {
-            return "NO SOUP FOR YOU"
+            return ""
         }
-        return "YAY"
+        return challengeVerification.challenge
     }
 
 }
