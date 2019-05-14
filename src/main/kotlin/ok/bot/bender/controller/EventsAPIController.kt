@@ -1,5 +1,7 @@
 package ok.bot.bender.controller
 
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import ok.bot.bender.model.Message
 import ok.bot.bender.service.EventHandlerService
 import org.springframework.beans.factory.annotation.Autowired
@@ -34,10 +36,11 @@ class EventsAPIController {
 
         when {
             message.event?.type == "message" && message.event.channel_type == "channel"
-                -> eventHandlerService.incrementBooze(message)
+                -> GlobalScope.launch { eventHandlerService.incrementBooze(message) }
             else -> return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("")
         }
 
+        println("YO DAWG")
         return ResponseEntity.status(HttpStatus.OK).body("")
     }
 }
