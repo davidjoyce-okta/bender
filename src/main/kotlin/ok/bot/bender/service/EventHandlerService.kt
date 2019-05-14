@@ -1,5 +1,6 @@
 package ok.bot.bender.service
 
+import ok.bot.bender.model.Message
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 
@@ -13,5 +14,9 @@ class EventHandlerService {
             verificationToken -> true
             else -> false
         }
+    }
+
+    fun incrementBooze(message: Message) {
+        return
     }
 }

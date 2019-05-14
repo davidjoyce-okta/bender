@@ -32,10 +32,12 @@ class EventsAPIController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(unauthorized)
         }
 
-        // Verified
+        when {
+            message.event?.type == "message" && message.event.channel_type == "channel"
+                -> eventHandlerService.incrementBooze(message)
+            else -> return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("")
+        }
 
-        println(message.toString())
-
-        return ResponseEntity.status(HttpStatus.OK).body("HEY")
+        return ResponseEntity.status(HttpStatus.OK).body("")
     }
 }
