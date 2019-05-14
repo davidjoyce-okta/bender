@@ -15,6 +15,10 @@ sourceCompatibility = '1.8'
 
 repositories {
 	mavenCentral()
+	maven {
+		url 'https://jitpack.io'
+	}
+
 }
 
 ext {
@@ -23,6 +27,7 @@ ext {
 }
 
 dependencies {
+	implementation 'com.github.jkcclemens:khttp:0.1.0'
 	implementation 'org.springframework.boot:spring-boot-starter-cache'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
