@@ -1,6 +1,6 @@
 package ok.bot.bender.controller
 
-import ok.bot.bender.model.ChallengeVerification
+import ok.bot.bender.model.Message
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -15,18 +15,18 @@ class EventsAPIController {
     var verificationToken: String? = null
 
     @PostMapping("/event")
-    fun postEvent(@RequestBody challengeVerification: ChallengeVerification) : String? {
-        if (challengeVerification.type == "url_verification") {
-            return when(challengeVerification.token) {
-                verificationToken -> challengeVerification.challenge
+    fun postEvent(@RequestBody message: Message) : String? {
+        if (message.type == "url_verification") {
+            return when(message.token) {
+                verificationToken -> message.challenge
                 else -> ""
             }
         }
 
-        println(challengeVerification.token)
-        println(challengeVerification.challenge)
-        println(challengeVerification.type)
-        println(challengeVerification.toString())
+        println(message.token)
+        println(message.challenge)
+        println(message.type)
+        println(message.toString())
         return "HEY"
     }
 
