@@ -1,8 +1,10 @@
 package ok.bot.bender.service
 
+import kotlinx.coroutines.delay
 import ok.bot.bender.model.Message
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+
 
 @Service
 class EventHandlerService {
@@ -16,7 +18,9 @@ class EventHandlerService {
         }
     }
 
-    fun incrementBooze(message: Message) {
+    suspend fun incrementBooze(message: Message)  {
+        delay(10000L)
+        println(message.toString())
         return
     }
 }
