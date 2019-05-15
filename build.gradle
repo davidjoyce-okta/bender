@@ -47,12 +47,8 @@ dependencies {
 	implementation 'com.fasterxml.jackson.module:jackson-module-kotlin'
 	implementation 'de.codecentric:spring-boot-admin-starter-client'
 	implementation 'de.codecentric:spring-boot-admin-starter-server'
-//	implementation 'org.flywaydb:flyway-core'
 	implementation 'org.jetbrains.kotlin:kotlin-reflect:1.3.31'
 	implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8'
-//	implementation 'org.liquibase:liquibase-core'
-//	implementation 'org.springframework.session:spring-session-data-redis'
-//	implementation 'org.springframework.session:spring-session-jdbc'
 	compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.2.1"
 	compile "org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.2.1"
 	compile "org.jetbrains.kotlin:kotlin-reflect:1.3.31"

@@ -1,4 +1,4 @@
-package ok.bot.bender.model
+package ok.bot.bender.entity
 
 import javax.persistence.Entity
 
