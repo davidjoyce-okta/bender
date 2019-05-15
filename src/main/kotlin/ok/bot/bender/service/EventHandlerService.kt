@@ -84,11 +84,11 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
                 rewardEnum = RewardType.BEER
             }
             in wineEmojis.toString() -> {
-                rewardName = "wine"
+                rewardName = "glass of wine"
                 rewardEnum = RewardType.WINE
             }
             in jointEmojis.toString() -> {
-                rewardName = "Cannabis"
+                rewardName = "hit of Cannabis"
                 rewardEnum = RewardType.JOINT
             }
             in juiceEmojis.toString() -> {
@@ -108,7 +108,7 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
                         "Content-Type" to "application/json"),
                 json = mapOf(
                         "channel" to channel,
-                        "text" to "Hey <@$sender> you now owe <@$recipient> 1 $rewardName"))
+                        "text" to "<@$sender> you now owe <@$recipient> 1 $rewardName."))
 
 
         val transaction = TransactionHistory(
@@ -124,10 +124,10 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
 
     fun buyYourOwn(channel: String, sender: String, rewardType: String) {
         val rewardName: String = when (rewardType) {
-            in beerEmojis.toString() -> "beer"
-            in wineEmojis.toString() -> "wine"
-            in jointEmojis.toString() -> "Cannabis"
-            in juiceEmojis.toString() -> "juice"
+            in beerEmojis.toString() -> "Beer"
+            in wineEmojis.toString() -> "Wine"
+            in jointEmojis.toString() -> "hit of Cannabis"
+            in juiceEmojis.toString() -> "Juice"
             else -> "crap"
         }
 
