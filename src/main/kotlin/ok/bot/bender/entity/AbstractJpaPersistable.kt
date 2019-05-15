@@ -1,4 +1,4 @@
-package ok.bot.bender.model
+package ok.bot.bender.entity
 
 import org.springframework.data.util.ProxyUtils
 import java.io.Serializable
