@@ -25,7 +25,7 @@ class EventsAPIController {
     @PostMapping("/event")
     fun postEvent(@RequestBody message: Message): ResponseEntity<*> {
         val verified: Boolean = eventHandlerService.verifyRequest(message.token)
-        var channelTypes: List<String> = listOf("channel", "group", "im")
+        val channelTypes: List<String> = listOf("channel", "group", "im")
 
         if (message.type == "url_verification") {
             return when (verified) {
