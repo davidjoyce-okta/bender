@@ -3,8 +3,6 @@ package ok.bot.bender.controller
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import ok.bot.bender.model.Message
-import ok.bot.bender.entity.RewardType
-import ok.bot.bender.entity.TransactionHistory
 import ok.bot.bender.repository.BenderRepository
 import org.springframework.beans.factory.annotation.Autowired
 import ok.bot.bender.service.EventHandlerService
@@ -37,18 +35,6 @@ class EventsAPIController(@Autowired val repo: BenderRepository) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(unauthorized)
         }
 
-        println(message.toString())
-
-//        when (message.event?.type?.equals("app_mention")) {
-//            true -> {
-//                val event = message.event
-//                val user = event.user
-//                khttp.post(
-//                        url = "https://hooks.slack.com/services/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",
-//                        json = mapOf("text" to "Hi ${user}, thanks for the mention!"))
-//
-//            }
-//        }
 //
 //        when (message.event?.text?.contains("<@")) {
 //            true -> {
@@ -62,9 +48,13 @@ class EventsAPIController(@Autowired val repo: BenderRepository) {
 //            }
 //        }
 
+        println(message.toString())
+
         when {
-            message.event?.type == "message" && message.event.channel_type == "channel"
-                -> GlobalScope.launch { eventHandlerService.incrementBooze(message) }
+            message.event?.type == "message" &&
+            message.event?.subtype != "message_deleted" &&
+            message.event.channel_type == "channel"
+                -> GlobalScope.launch { eventHandlerService.processChannelMessage(message) }
             else -> return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("")
         }
 
