@@ -3,7 +3,9 @@ package ok.bot.bender.service
 import ok.bot.bender.entity.RewardType
 import ok.bot.bender.entity.TransactionHistory
 import ok.bot.bender.model.Message
+import ok.bot.bender.entity.OwedStats
 import ok.bot.bender.repository.BenderRepository
+import ok.bot.bender.repository.OwedRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.event.ApplicationReadyEvent
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Service
 class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
     @Autowired
     val benderRepository: BenderRepository? = null
+
+    @Autowired
+    val owedRepository: OwedRepository? = null
 
     @Value("\${bender.slack.verificationToken}")
     var verificationToken: String? = null
@@ -28,6 +33,14 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
     @Value("\${bender.slack.increment.regex}")
     var regexIncrementPattern: String? = null
     var incrementRegex: Regex? = null
+
+    @Value("\${bender.slack.owing.regex}")
+    var regexOwingPattern: String? = null
+    var owingRegex: Regex? = null
+
+    @Value("\${bender.slack.owed.regex}")
+    var regexOwedPattern: String? = null
+    var owedRegex: Regex? = null
 
     @Value("#{'\${bender.slack.beer.emojis}'.split(',')}")
     var beerEmojis: List<String>? = null
@@ -43,6 +56,8 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
 
     override fun onApplicationEvent(contextRefreshedEvent: ApplicationReadyEvent) {
         incrementRegex = regexIncrementPattern?.toRegex()
+        owedRegex = regexOwedPattern?.toRegex()
+        owingRegex = regexOwingPattern?.toRegex()
     }
 
     fun verifyRequest(token: String?): Boolean {
@@ -54,6 +69,8 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
 
     suspend fun processChannelMessage(message: Message) {
         val incrementMatches = incrementRegex?.matchEntire(message.event?.text.toString())
+        val owedMatches = owedRegex?.matchEntire(message.event?.text.toString())
+        val owingMatches = owingRegex?.matchEntire(message.event?.text.toString())
 
         when {
             incrementMatches?.groupValues?.size == 4 ->
@@ -63,9 +80,57 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
                     message.event?.user.toString(),
                     incrementMatches.groupValues[2],
                     incrementMatches.groupValues[3])
+            owingMatches?.groupValues?.size == 3 ->
+                statsOwing(
+                        message.event?.channel.toString(),
+                        owingMatches.groupValues[2],
+                        message.event?.user.toString())
+            owedMatches?.groupValues?.size == 2 ->
+                statsOwed(
+                        message.event?.channel.toString(),
+                        message.event?.user.toString()
+                )
         }
 
         return
+    }
+
+    fun statsOwing(channel: String, recipient: String, sender: String) {
+
+    }
+
+    fun statsOwed(channel: String, recipient: String) {
+        val statsOwed: List<OwedStats>? = owedRepository?.getOwedStats(recipient)
+        var owedMessage: String
+
+        when (statsOwed) {
+            null -> owedMessage = "No one currently owes you anything"
+            else -> {
+                owedMessage = "Currently you are owed the following:\n"
+
+                for (item in statsOwed) {
+                    owedMessage += "\n ${item.quantity} "
+
+                    when (item.rewardType?.name) {
+                        "BEER" -> owedMessage += " beer(s) from "
+                        "JOINT" -> owedMessage += " hit(s) of Cannabis from "
+                        "JUICE" -> owedMessage += " glass(es) of juice from "
+                        "WINE" -> owedMessage += " glass(es) of wine from "
+                    }
+
+                    owedMessage += "<@${item.sender}"
+                }
+            }
+        }
+
+        khttp.post(
+            url = chatPostMessageURL.toString(),
+            headers = mapOf(
+                    "Authorization" to "Bearer $botOAuthAccessToken",
+                    "Content-Type" to "application/json"),
+            json = mapOf(
+                    "channel" to channel,
+                    "text" to owedMessage))
     }
 
     fun incrementQuantity(channel: String, recipient: String, sender: String,
