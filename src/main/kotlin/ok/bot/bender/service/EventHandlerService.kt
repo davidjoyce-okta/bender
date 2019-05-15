@@ -1,7 +1,10 @@
 package ok.bot.bender.service
 
 import ok.bot.bender.entity.RewardType
+import ok.bot.bender.entity.TransactionHistory
 import ok.bot.bender.model.Message
+import ok.bot.bender.repository.BenderRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.ApplicationListener
@@ -10,6 +13,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
+    @Autowired
+    val benderRepository: BenderRepository? = null
 
     @Value("\${bender.slack.verificationToken}")
     var verificationToken: String? = null
@@ -105,11 +110,16 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
                         "channel" to channel,
                         "text" to "Hey <@$sender> you now owe <@$recipient> 1 $rewardName"))
 
-        println(channel)
-        println(recipient)
-        println(sender)
-        println(rewardType)
-        println(notes)
+
+        val transaction = TransactionHistory(
+                sender = sender,
+                recipient = recipient,
+                notes = notes,
+                quantity = 1,
+                rewardType = rewardEnum
+        )
+
+        benderRepository?.save(transaction)
     }
 
     fun buyYourOwn(channel: String, sender: String, rewardType: String) {
@@ -139,6 +149,6 @@ class EventHandlerService: ApplicationListener<ApplicationReadyEvent> {
                     "Content-Type" to "application/json"),
             json = mapOf(
                     "channel" to channel,
-                    "text" to "<@$sender>, you meatbag, you can only owe others beer, wine, juice or Cannabis (only if you're Canadian and not a chump)."))
+                    "text" to "<@$sender>, you meatbag, you can only owe others Beer, Wine, Juice or Cannabis (only if you're Canadian and not a chump)."))
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/v1/slack")
-class EventsAPIController(@Autowired val repo: BenderRepository) {
+class EventsAPIController {
 
     @Autowired
     lateinit var eventHandlerService: EventHandlerService
@@ -25,6 +25,7 @@ class EventsAPIController(@Autowired val repo: BenderRepository) {
     @PostMapping("/event")
     fun postEvent(@RequestBody message: Message): ResponseEntity<*> {
         val verified: Boolean = eventHandlerService.verifyRequest(message.token)
+        var channelTypes: List<String> = listOf("channel", "group", "im")
 
         if (message.type == "url_verification") {
             return when (verified) {
@@ -35,25 +36,12 @@ class EventsAPIController(@Autowired val repo: BenderRepository) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(unauthorized)
         }
 
-//
-//        when (message.event?.text?.contains("<@")) {
-//            true -> {
-//                val event = message.event;
-//                val t = TransactionHistory(
-//                        event.user!!,
-//                        event.text.substringAfter("<@").substringBefore(">"),
-//                        1,
-//                        RewardType.JUICE)
-//                repo.save(t)
-//            }
-//        }
-
         println(message.toString())
 
         when {
             message.event?.type == "message" &&
-            message.event?.subtype != "message_deleted" &&
-            message.event.channel_type == "channel"
+            message.event.subtype != "message_deleted" &&
+            message.event.channel_type in channelTypes
                 -> GlobalScope.launch { eventHandlerService.processChannelMessage(message) }
             else -> return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("")
         }
